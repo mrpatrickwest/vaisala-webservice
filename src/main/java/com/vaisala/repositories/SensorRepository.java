@@ -5,6 +5,7 @@ import com.vaisala.model.SensorMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -28,6 +29,12 @@ public final class SensorRepository implements ISensorRepository {
 
     private static final StringBuffer GET_SENSORS_BY_STATION = new StringBuffer()
             .append("select * from sensors sensor where sensor.station_id = :id");
+
+    private static final StringBuffer ADD_SENSOR = new StringBuffer()
+            .append("insert into sensors set name = :name, type = :type, station_id = :station");
+
+    private static final StringBuffer DELETE_SENSOR = new StringBuffer()
+            .append("delete from sensors where id = :id");
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -89,6 +96,16 @@ public final class SensorRepository implements ISensorRepository {
      */
     @Override
     public boolean addSensor(Sensor sensor) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("name", sensor.getName());
+        params.put("type", sensor.getType());
+        params.put("station", sensor.getStationId());
+        try {
+            this.jdbcTemplate.update( ADD_SENSOR.toString(), params );
+            return true;
+        } catch(DataAccessException e) {
+            log.error("Failed to add sensor " + e.getMessage());
+        }
         return false;
     }
 
@@ -98,6 +115,14 @@ public final class SensorRepository implements ISensorRepository {
      */
     @Override
     public boolean deleteSensor(int id) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        try {
+            this.jdbcTemplate.update( DELETE_SENSOR.toString(), params );
+            return true;
+        } catch(DataAccessException e) {
+            log.error("Failed to delete sensor " + e.getMessage());
+        }
         return false;
     }
 }

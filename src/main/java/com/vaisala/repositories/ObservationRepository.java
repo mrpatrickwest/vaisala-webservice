@@ -5,6 +5,7 @@ import com.vaisala.model.ObservationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,12 @@ public final class ObservationRepository implements IObservationRepository {
     private static final StringBuffer GET_OBSERVATIONS_BY_STATION = new StringBuffer()
             .append("select observation.id,observation.observed_timestamp,observation.received_timestamp,observation.value,observation.quality_code,observation.sensor_id")
             .append(" from observations observation, sensors sensor where observation.sensor_id = sensor.id AND sensor.station_id = :id");
+
+    private static final StringBuffer ADD_OBSERVATION = new StringBuffer()
+            .append("insert into observations set observed_timestamp = :observed, received_timestamp = :received, value = :value, quality_code = :quality, sensor_id = :sensor");
+
+    private static final StringBuffer DELETE_OBSERVATION = new StringBuffer()
+            .append("delete from observations where id = :id");
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -102,6 +109,18 @@ public final class ObservationRepository implements IObservationRepository {
      */
     @Override
     public boolean addObservation(Observation observation) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("observed", observation.getObservedTimestamp());
+        params.put("received", observation.getReceivedTimestamp());
+        params.put("value", observation.getValue());
+        params.put("quality", observation.getQualityCode());
+        params.put("sensor", observation.getSensorId());
+        try {
+            this.jdbcTemplate.update( ADD_OBSERVATION.toString(), params );
+            return true;
+        } catch(DataAccessException e) {
+            log.error("Failed to add observation " + e.getMessage());
+        }
         return false;
     }
 
@@ -111,6 +130,14 @@ public final class ObservationRepository implements IObservationRepository {
      */
     @Override
     public boolean deleteObservation(int id) {
+        final Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+        try {
+            this.jdbcTemplate.update( DELETE_OBSERVATION.toString(), params );
+            return true;
+        } catch(DataAccessException e) {
+            log.error("Failed to delete observation " + e.getMessage());
+        }
         return false;
     }
 }
