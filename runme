@@ -7,5 +7,5 @@ then
     exit 1
 fi
 
-nohup java -jar build/libs/vsto-web-services-0.0.1-SNAPSHOT.jar > /var/log/vsto/webservices.log 2>&1 &
+nohup java -jar build/libs/vaisala-services-0.0.1-SNAPSHOT.jar > ./vaisala.log 2>&1 &
 
