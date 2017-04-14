@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/** Repository class that handles retrieving, adding and deleting stations
+ *
+ */
 @Repository
 @Transactional
 public final class StationRepository implements IStationRepository {

@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/** Repository class that implements methods to retrieve, add and delete observations
+ *
+ */
 @Repository
 @Transactional
 public final class ObservationRepository implements IObservationRepository {
@@ -44,7 +47,7 @@ public final class ObservationRepository implements IObservationRepository {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
 	/**
-	 * @param id
+	 * @param id database primary key of observation
 	 * @return Observation with given id
 	 */
     @Override
@@ -92,6 +95,7 @@ public final class ObservationRepository implements IObservationRepository {
         return getObservations(GET_OBSERVATIONS_BY_SENSOR.toString(), params);
     }
 
+    // helper function to retrieve list of observations given a sql query to use and params for the query
     private List<Observation>getObservations(final String query, Map<String, Object> params) {
         List<Observation> observations = null;
         try {
@@ -125,7 +129,7 @@ public final class ObservationRepository implements IObservationRepository {
     }
 
     /**
-     * @param id observation id
+     * @param id observation id to delete
      * @return true on successful deletion, false otherwise
      */
     @Override

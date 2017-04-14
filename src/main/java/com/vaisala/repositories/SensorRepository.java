@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+/** Repository class to be able to retrieve, add and delete sensors
+ *
+ */
 @Repository
 @Transactional
 public final class SensorRepository implements ISensorRepository {
@@ -74,6 +77,7 @@ public final class SensorRepository implements ISensorRepository {
     }
 
     /**
+     * @param stationId station identifier to look up
      * @return sensors for a given station
      */
     @Override
@@ -110,7 +114,7 @@ public final class SensorRepository implements ISensorRepository {
     }
 
     /**
-     * @param id sensor id
+     * @param id sensor id to delete
      * @return true on successful deletion, false otherwise
      */
     @Override
